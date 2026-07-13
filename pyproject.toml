@@ -4,14 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tablofy"
-version = "1.0.0-alpha"
+version = "2.0.0"
 description = "A beginner-friendly data analytics library wrapping pandas, matplotlib, seaborn, and DuckDB."
 readme = "README.md"
 license = "MIT"
 authors = [
-    { name = "Tablofy Contributors" },
+    { name = "Sheharyar Siraj" },
 ]
 requires-python = ">=3.9"
+keywords = [
+    "data analytics", "pandas", "dataframe", "visualization",
+    "sql", "duckdb", "matplotlib", "seaborn", "python",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "pandas>=2.0",
     "numpy>=1.24",
@@ -23,6 +40,12 @@ dependencies = [
     "openpyxl>=3.1",
     "jinja2>=3.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Sheharyar-ans/tablofy"
+Source = "https://github.com/Sheharyar-ans/tablofy"
+Issues = "https://github.com/Sheharyar-ans/tablofy/issues"
+Documentation = "https://github.com/Sheharyar-ans/tablofy"
 
 [project.optional-dependencies]
 dev = [

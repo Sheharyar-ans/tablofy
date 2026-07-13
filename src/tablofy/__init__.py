@@ -1,6 +1,6 @@
 """Tablofy — A beginner-friendly data analytics library."""
 
-__version__ = "1.0.0-alpha"
+__version__ = "2.0.0"
 
 from tablofy.core.errors import (
     TablofyColumnError,

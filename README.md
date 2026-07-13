@@ -1,6 +1,6 @@
 # Tablofy
 
-A beginner-friendly data analytics library for Python that wraps pandas, matplotlib, seaborn, and DuckDB under a simple, unified API.
+A beginner-friendly data analytics library for Python. Tablofy is **not a pandas replacement** — it wraps pandas, matplotlib, seaborn, and DuckDB under a simple, unified API so you can focus on analysis, not boilerplate.
 
 ```python
 import tablofy as tf
