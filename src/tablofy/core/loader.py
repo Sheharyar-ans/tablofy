@@ -60,3 +60,36 @@ def load(path: str | Path, **kwargs: Any):
 
     Validator.assert_not_empty(df, name=name)
     return TablofyFrame(df, name=name)
+
+
+def load_web(url: str, **kwargs: Any):
+    """Load a dataset from a URL into a ``TablofyFrame``.
+
+    Supports CSV and JSON URLs. Internally calls ``pd.read_csv`` or
+    ``pd.read_json`` depending on the URL suffix.
+
+    Parameters
+    ----------
+    url : str
+        Web URL pointing to a CSV or JSON file.
+    **kwargs
+        Passed to the underlying pandas reader.
+
+    Returns
+    -------
+    TablofyFrame
+    """
+    from tablofy.core.frame import TablofyFrame
+    import pandas as pd
+
+    suffix = Path(url).suffix.lower()
+
+    if suffix == ".csv":
+        df = pd.read_csv(url, **kwargs)
+    elif suffix == ".json":
+        df = pd.read_json(url, **kwargs)
+    else:
+        df = pd.read_csv(url, **kwargs)
+
+    Validator.assert_not_empty(df, name=url)
+    return TablofyFrame(df, name=url)

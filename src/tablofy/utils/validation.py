@@ -23,7 +23,10 @@ class Validator:
 
     @staticmethod
     def assert_file_exists(path: Path) -> None:
-        """Raise TablofyFileError if *path* does not exist."""
+        """Raise TablofyFileError if *path* does not exist and is not a Web URL."""
+        path_str = str(path)
+        if path_str.startswith("http://") or path_str.startswith("https://"):
+            return  # Bypass URL validation
         if not path.exists():
             raise TablofyFileError(f"File not found: {path}")
         if not path.is_file():

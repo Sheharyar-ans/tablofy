@@ -91,35 +91,30 @@ class TimeSeries:
 
         return TablofyFrame(resampled, name=self._frame.name)
 
-    def rolling(self, window: int, column: str, agg: str = "mean") -> TablofyFrame:
-        """Compute a rolling-window statistic on *column*.
+    def rolling(self, window: int, col: str, **kwargs):
+        """Calculate rolling mean on the specified column.
 
-        The result is added as a new column named ``"{column}_rolling_{agg}_{window}"``
-        on the **original** frame (in-place), and ``self`` is returned for chaining.
+        Returns a TablofyFrame containing the rolling window results to
+        preserve library chainability.
 
         Parameters
         ----------
         window : int
             Window size (number of periods).
-        column : str
+        col : str
             Numeric column to compute the rolling statistic on.
-        agg : str
-            Statistic to compute — ``"mean"``, ``"median"``, ``"std"``,
-            ``"min"``, ``"max"``, ``"sum"`` (default ``"mean"``).
 
         Returns
         -------
         TablofyFrame
-            ``self``, with the new rolling column added.
+            A new frame containing the rolling mean column.
         """
-        self._check_col(column)
-        if not pd.api.types.is_numeric_dtype(self._df[column]):
-            raise TablofyColumnError(
-                f"Column {column!r} is not numeric."
-            )
-        new_col = f"{column}_rolling_{agg}_{window}"
-        self._df[new_col] = getattr(self._df[column].rolling(window=window), agg)()
-        return self._frame
+        from tablofy.core.frame import TablofyFrame
+
+        self._check_col(col)
+        rolling_series = self._df[col].rolling(window=window, **kwargs).mean()
+        rolling_df = pd.DataFrame({f"{col}_rolling_{window}": rolling_series})
+        return TablofyFrame(rolling_df, name=f"{self._frame.name}_rolling")
 
     def detect_trend(self, column: str) -> dict:
         """Detect the overall trend direction of *column*.
@@ -148,14 +143,12 @@ class TimeSeries:
         if len(y) < 2:
             return {"direction": "flat", "slope": 0.0, "strength": "weak"}
 
-        # Try statsmodels decomposition first (more robust)
         try:
             import statsmodels.api as sm
 
             mod = sm.OLS(y, sm.add_constant(x)).fit()
             slope = float(mod.params[1])
         except ImportError:
-            # Fallback to numpy polyfit
             slope = float(np.polyfit(x, y, 1)[0])
 
         eps = 1e-8

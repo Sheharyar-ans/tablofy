@@ -854,6 +854,17 @@ class TablofyFrame:
         """Return the underlying pandas DataFrame."""
         return self._df
 
+    def __getitem__(self, key):
+        """Allows square-bracket access to columns from the underlying DataFrame.
+
+        If *key* is a string, returns the pandas Series directly.
+        If *key* is a list, returns a new TablofyFrame with those columns.
+        """
+        result = self._df[key]
+        if isinstance(result, pd.DataFrame):
+            return TablofyFrame(result, name=self.name)
+        return result
+
     def __repr__(self) -> str:
         return f"<TablofyFrame '{self.name}' shape=({self._df.shape[0]}, {self._df.shape[1]})>"
 
