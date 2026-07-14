@@ -1,53 +1,74 @@
-# Tablofy 🚀
+<p align="center">
+  <h1 align="center">⚡ TABLOFY (v2.1.3) ⚡</h1>
+  <p align="center"><em>One import to rule them all — zero-boilerplate data analytics for Python.</em></p>
+</p>
 
-**One import to rule them all.**  
-*Zero-boilerplate data loading, cleaning, visualization, ML, and reporting — all from a single import.*
-
-[![PyPI](https://img.shields.io/pypi/v/tablofy)](https://pypi.org/project/tablofy/)
-[![Python](https://img.shields.io/pypi/pyversions/tablofy)](https://pypi.org/project/tablofy/)
-[![License](https://img.shields.io/pypi/l/tablofy)](LICENSE)
-[![Downloads](https://img.shields.io/pypi/dm/tablofy)](https://pypi.org/project/tablofy/)
+<p align="center">
+  <a href="https://pypi.org/project/tablofy/"><img src="https://img.shields.io/pypi/v/tablofy?label=version&color=blue&logo=python" alt="Version 2.1.3"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/pypi/l/tablofy?color=green" alt="MIT License"></a>
+  <a href="https://pypi.org/project/tablofy/"><img src="https://img.shields.io/pypi/pyversions/tablofy?color=orange" alt="Python 3.8+"></a>
+  <a href="https://pypi.org/project/tablofy/"><img src="https://img.shields.io/badge/environment-notebook%20%7C%20script-lightgrey" alt="Notebook & Script"></a>
+</p>
 
 ---
 
-## 🧠 Why Tablofy?
+## 📖 Table of Contents
 
-Stop writing the same 10 imports at the top of every notebook. Tablofy wraps **pandas, matplotlib, seaborn, Plotly, scikit-learn, statsmodels, DuckDB, and more** behind a single, consistent API.
+- [Why Tablofy?](#-why-tablofy)
+- [The Comparison](#-the-comparison)
+- [Installation](#-installation)
+- [Quickstart](#-quickstart)
+- [How to Display & Render Visuals](#-how-to-display--render-visuals)
+- [Unified Engine Shortcuts](#-unified-engine-shortcuts)
+- [Subscriptable Bracket Support](#-subscriptable-bracket-support)
+- [Auto-Cleaning Pipeline](#-auto-cleaning-pipeline)
+- [Zero-Boilerplate ML Predictions](#-zero-boilerplate-ml-predictions)
+- [Time-Series Engine](#-time-series-engine)
+- [Aesthetic Themes](#-aesthetic-themes)
+- [API Overview](#-api-overview)
+- [License](#-license)
 
-| Task | Raw Python | Tablofy |
+---
+
+## 🎯 Why Tablofy?
+
+Stop writing the same 10 imports at the top of every notebook. Tablofy wraps **pandas, numpy, matplotlib, seaborn, Plotly, scikit-learn, statsmodels, and DuckDB** behind a single, consistent API.
+
+- **One import.** `import tablofy as tf` — that's it.
+- **Unified shortcuts.** `tf.pd`, `tf.np`, and `tf.show()` available immediately.
+- **Bracket selection.** `df['Column']` returns a pandas Series natively.
+- **Zero-boilerplate ML.** `df.ml.predict(target, features, method="classification")` — no manual train/test split, scaling, or metric imports.
+- **Rolling time-series.** `df.ts.rolling(window=7, col="sales")` returns a fresh `TablofyFrame`.
+
+---
+
+## ⚖️ The Comparison
+
+| Aspect | The Standard Python Way | The Tablofy Way |
 |---|---|---|
-| Import | `import pandas as pd`<br>`import numpy as np`<br>`import matplotlib.pyplot as plt`<br>`import seaborn as sns`<br>... | `import tablofy as tf` |
-| Load CSV | `pd.read_csv("data.csv")` | `tf.load("data.csv")` |
-| Clean | 5–10 lines of boilerplate | `df.clean()` |
-| Chart | `plt.figure(); sns.barplot(...); plt.show()` | `df.bar(x="a", y="b")` |
-| ML pipeline | 20+ lines (split, scale, train, eval) | `model = df.ml.predict(target, features, method="regression")` |
-| Report | Manual HTML/CSS/Jinja wiring | `df.report("report.html")` |
-
-```python
-import tablofy as tf          # ← the only import you'll ever need
-```
-
-> 💡 **Zero-boilerplate philosophy:** No `import pandas as pd`, no `import numpy as np`, no `import matplotlib.pyplot as plt`, no `from sklearn.model_selection import train_test_split`. Tablofy does it all for you.
+| **Imports** | `import pandas as pd`<br>`import numpy as np`<br>`import matplotlib.pyplot as plt`<br>`import seaborn as sns`<br>`from sklearn.model_selection import train_test_split`<br>`from sklearn.preprocessing import StandardScaler`<br>`from sklearn.ensemble import RandomForestClassifier`<br>`from sklearn.metrics import accuracy_score` | `import tablofy as tf` |
+| **Load CSV** | `pd.read_csv("data.csv")` | `tf.load("data.csv")` |
+| **Clean** | 5–10 lines of manual `.fillna()`, `.drop_duplicates()`, column rename logic | `df.clean()` |
+| **Bar chart** | `plt.figure(figsize=(8,5))`<br>`sns.barplot(data=df, x="a", y="b")`<br>`plt.title("...")`<br>`plt.show()` | `df.bar(x="a", y="b")` |
+| **ML pipeline** | `X_train, X_test, y_train, y_test = train_test_split(...)`<br>`scaler = StandardScaler()`<br>`X_train = scaler.fit_transform(X_train)`<br>`X_test = scaler.transform(X_test)`<br>`model = RandomForestClassifier()`<br>`model.fit(X_train, y_train)`<br>`preds = model.predict(X_test)`<br>`print(accuracy_score(y_test, preds))` | `model = df.ml.predict(target, features, method="classification")` |
+| **Time-series rolling** | `df['sales'].rolling(window=7).mean()`<br>(returns a raw Series) | `df.ts.rolling(window=7, col="sales")`<br>(returns a `TablofyFrame`) |
+| **HTML report** | Manual Jinja2 template + custom CSS | `df.report("report.html")` |
 
 ---
 
 ## 📦 Installation
 
 ```bash
-pip install tablofy
+pip install "tablofy[all]==2.1.3"
 ```
 
-> Pin to the latest stable release: `pip install "tablofy[all]==2.1.4"`
+Requires Python 3.8 or later.
 
-Requires Python 3.9 or later.
-
-### Optional feature extras
-
-Keep the core lean; opt in to heavier libraries as needed:
+### Optional extras (install individually for a leaner setup)
 
 | Command | What you get |
 |---|---|
-| `pip install "tablofy[all]"` | Everything below |
+| `pip install tablofy` | Core: pandas, numpy, matplotlib, seaborn, DuckDB, Jinja2 |
 | `pip install "tablofy[viz]"` | Interactive Plotly charts (`interactive=True`) |
 | `pip install "tablofy[ml]"` | Scikit-learn ML pipeline (`df.ml.predict`) |
 | `pip install "tablofy[stats]"` | SciPy / Statsmodels advanced statistics |
@@ -56,213 +77,215 @@ Keep the core lean; opt in to heavier libraries as needed:
 | `pip install "tablofy[fast]"` | Polars / PyArrow for large datasets |
 | `pip install "tablofy[dl]"` | PyTorch / TensorFlow deep learning |
 
-### 📋 TestPyPI
-
-```bash
-pip install -i https://test.pypi.org/simple/ tablofy
-```
-
 ---
 
 ## 🚀 Quickstart
 
-A complete end-to-end Titanic analysis in a single script — every line works with a local CSV:
+A complete end-to-end pipeline in 10 lines — no separate imports required.
 
 ```python
 import tablofy as tf
 
-# 1. Set a modern visual theme
-tf.set_theme("modern")
+# 1. Load local dataset
+df = tf.load("titanic_dataset.csv")
 
-# 2. Load from a local CSV file
-df = tf.load("titanic.csv")
+# 2. Subset columns with case-insensitive smart selection
+df = df.select("Pclass", "Sex", "Age", "Fare", "Survived")
 
-# 3. Case-insensitive selection + one-shot cleaning
-subset = df.select("survived", "pclass", "fare", "age").clean()
+# 3. Auto-clean: fill missing values, snake_case columns, strip whitespace
+df.clean()
 
-# 4. Bracket subscription — works just like pandas
-print(subset['pclass'].unique())          # [1 2 3]
+# 4. Bracket selection returns a native pandas Series
+print(df['Survived'].value_counts())
 
-# 5. Static violin plot — no imports needed
-subset.violin(x="survived", y="age")
-tf.show()                                  # display all figures
-
-# 6. Automated ML pipeline — trains, evaluates, returns the model
-model = subset.ml.predict(
-    target="survived",
-    features=["pclass", "fare"],
+# 5. Train and evaluate a classifier
+model = df.ml.predict(
+    target="Survived",
+    features=["Pclass", "Age", "Fare"],
     method="classification",
 )
-print(f"Model trained: {type(model).__name__}")
-
-# 7. Export a shareable HTML report
-df.report("titanic_report.html")
+print(f"Accuracy: {model.score.__name__ if hasattr(model, 'score') else 'N/A'}")
 ```
 
-> ✅ That's it. **Six steps, zero boilerplate imports.** Tablofy handles everything from loading to reporting.
+> That's it. No `import pandas as pd`. No `train_test_split`. No `StandardScaler`. No `accuracy_score`.
 
 ---
 
-## 🔧 Unified Shortcuts (`tf.pd`, `tf.np`, `tf.show()`)
+## 🎨 How to Display & Render Visuals
+
+Beginners often hit rendering issues in notebooks because matplotlib figures don't always show automatically. Tablofy gives you **three reliable ways** to display visuals.
+
+### Method 1: The Interactive Way (Recommended)
+
+Set `interactive=True` to use Plotly, which renders instantly in any notebook environment without any `show()` command.
+
+```python
+import tablofy as tf
+
+df = tf.load("titanic_dataset.csv")
+
+# Interactive charts display immediately — no show() needed
+df.bar(x="Sex", y="Fare", interactive=True)
+df.scatter(x="Age", y="Fare", interactive=True)
+df.violin(x="Sex", y="Age", interactive=True)
+```
+
+> Plotly figures are self-rendering in Jupyter Notebook, Jupyter Lab, VS Code, and Google Colab.
+
+### Method 2: The Variable Notebook Mode
+
+Store the plot in a variable and write it on the last line of the cell. Jupyter will automatically render the matplotlib figure.
+
+```python
+import tablofy as tf
+
+df = tf.load("titanic_dataset.csv")
+
+fig = df.box(x="Pclass", y="Age")
+fig   # ← put the variable name on the last line of the cell
+```
+
+> This works because Jupyter displays the last expression in a cell. It also works with `fig.show()` in matplotlib.
+
+### Method 3: The Script Mode
+
+For standalone `.py` scripts, use Tablofy's global `tf.show()` wrapper to display all active figures at once.
+
+```python
+import tablofy as tf
+
+df = tf.load("titanic_dataset.csv")
+
+df.bar(x="Pclass", y="Fare")
+df.hist(column="Age")
+df.heatmap()
+
+# Display everything in one call
+tf.show()
+```
+
+> `tf.show()` calls `matplotlib.pyplot.show()` internally — it's a unified shortcut so you never need `import matplotlib.pyplot as plt`.
+
+---
+
+## 🔧 Unified Engine Shortcuts
 
 Tablofy exposes **pandas** and **numpy** directly on the `tf` namespace so you never need to import them separately.
 
 ```python
 import tablofy as tf
 
-# pandas and numpy — always available
-print(tf.pd.DataFrame({"x": [1, 2, 3]}))      # no import needed
-print(tf.np.array([1, 2, 3]))                  # no import needed
+# pandas — ready to use
+print(tf.pd.DataFrame({"col": [1, 2, 3]}))
 
-# Display all matplotlib/seaborn figures at once
-tf.show()                                       # calls plt.show() internally
+# numpy — ready to use
+print(tf.np.array([10, 20, 30]))
+
+# Display all figures (calls plt.show() internally)
+tf.show()
 ```
 
-> 💡 `tf.show()` dynamically imports `matplotlib.pyplot` only when called — **zero overhead at import time**.
+> `tf.pd` and `tf.np` gracefully fall back to `None` if the underlying library is missing, so your code never crashes at import time.
 
 ---
 
-## 📂 Bulletproof Data Loading
+## 📎 Subscriptable Bracket Support
 
-`tf.load()` auto-detects the file format from the extension and validates that local files exist before reading them.
-
-```python
-# CSV — the most common format
-df = tf.load("titanic.csv")
-
-# Excel, JSON, and Parquet — all auto-detected
-df = tf.load("survey.xlsx")
-df = tf.load("config.json")
-df = tf.load("warehouse.parquet")
-```
-
-**Supported formats:** `.csv`, `.xlsx`, `.xls`, `.json`, `.parquet`.
-
-> 💡 `tf.load()` raises a clear `TablofyFileError` if the file is missing or the format is unsupported — no silent failures.
-
----
-
-## 🎯 Subscriptable `TablofyFrame`
-
-`TablofyFrame` supports **native square-bracket subscripting** just like a pandas DataFrame — strings return a Series, lists return a new `TablofyFrame`.
+`TablofyFrame` supports **native Python square-bracket subscripting** — just like a regular pandas DataFrame.
 
 ```python
-# Bracket selection — returns a pandas Series
+import tablofy as tf
+
+df = tf.load("titanic_dataset.csv")
+
+# String key → returns a native pandas Series
 ages = df['Age']
-print(ages.unique())                # chaining works naturally
+print(type(ages))             # <class 'pandas.core.series.Series'>
+print(ages.unique())          # chaining works out of the box
 
-# Bracket selection with a list — returns a new TablofyFrame
+# List of keys → returns a new TablofyFrame
 subset = df[['Pclass', 'Fare', 'Age']]
-print(type(subset))                 # <class 'TablofyFrame'>
-
-# Pairs perfectly with select()
-df.select("pclass", "fare")['fare'].mean()
+print(type(subset))           # <class 'tablofy.core.frame.TablofyFrame'>
+print(subset.preview())
 ```
 
-| Syntax | Returns | Description |
-|---|---|---|
-| `df['col']` | `pd.Series` | Single column by name |
-| `df[['a','b']]` | `TablofyFrame` | Subset of columns |
-| `.select(*cols)` | `TablofyFrame` | Case-insensitive column selector |
+> This means `df['Pclass'].unique()`, `df['Age'].mean()`, and `df[['A','B']].clean()` all work naturally without any manual unwrapping.
 
 ---
 
-## 🧹 Cleaning Pipeline
+## 🧼 Auto-Cleaning Pipeline
 
 ```python
-# One-shot cleaning — duplicates, missing values, column names, dates, whitespace
-df.clean()
+import tablofy as tf
 
-# View what was done
+df = tf.load("titanic_dataset.csv")
+
+# One-shot cleaning — everything in a single call
+df.clean()
+```
+
+**What `df.clean()` does automatically:**
+
+| Action | Default | Effect |
+|---|---|---|
+| Remove duplicates | `True` | Drops fully duplicate rows |
+| Fill missing values | `"smart"` | Numeric → median; Text → mode |
+| Normalise column names | `"snake_case"` | `"PassengerId"` → `"passenger_id"` |
+| Parse dates | `True` | Detects and converts date-like columns |
+| Strip whitespace | `True` | Trims leading/trailing spaces from text |
+
+```python
+# Get a human-readable report of what was fixed
 report = df.clean_report()
 print(report['summary_text'])
 ```
 
-| Argument | Default | Effect |
-|---|---|---|
-| `duplicates` | `True` | Remove duplicate rows |
-| `missing` | `"smart"` | Fill numeric with median, text with mode |
-| `columns` | `"snake_case"` | Normalise column names |
-| `dates` | `True` | Parse date-like object columns |
-| `text` | `True` | Strip whitespace, drop fully-null columns |
-
-> 💡 Chain `.clean()` directly after `.select()`: `df.select("age", "fare").clean().preview()`
+> The `clean_report()` method logs every action taken so you always know what changed.
 
 ---
 
-## 📊 Dual-Engine Visualization
-
-Every chart method works in **static mode** (matplotlib / seaborn) by default and switches to **interactive mode** (Plotly) with `interactive=True`.
-
-### 🖼️ Static Charts
-
-```python
-# Static — matplotlib / seaborn (always available)
-df.bar(x="pclass", y="fare")
-df.violin(x="survived", y="age")
-df.box(x="sex", y="age")
-df.scatter(x="age", y="fare")
-df.hist(column="age")
-df.pie(labels="pclass", values="fare")
-df.area(x="age", y="fare")
-df.heatmap()
-df.pairplot()
-
-# Show all figures at once
-tf.show()
-```
-
-### 🌐 Interactive Charts
-
-```python
-# Interactive — Plotly (requires: pip install tablofy[viz])
-df.bar(x="pclass", y="fare", interactive=True)
-df.scatter(x="age", y="fare", interactive=True)
-df.hist(column="age", interactive=True)
-```
-
-> 💡 Use `save="chart.png"` or `save="chart.html"` to persist figures to disk.
-
----
-
-## 🤖 Applied ML Engine
+## 🤖 Zero-Boilerplate ML Predictions
 
 No manual imports. No boilerplate. Just pick your target, features, and method.
 
 ```python
-# Requires: pip install tablofy[ml]
+import tablofy as tf
 
-# 🔵 Classification (RandomForestClassifier)
+df = tf.load("titanic_dataset.csv")
+
+# Classification (RandomForestClassifier)
 model = df.ml.predict(
-    target="survived",
-    features=["pclass", "age", "fare", "sibsp", "parch"],
+    target="Survived",
+    features=["Pclass", "Age", "Fare", "SibSp", "Parch"],
     method="classification",
 )
 
-# 🟢 Regression (LinearRegression)
+# Regression (LinearRegression)
 model = df.ml.predict(
-    target="fare",
-    features=["pclass", "age", "sibsp", "parch"],
+    target="Fare",
+    features=["Pclass", "Age", "SibSp", "Parch"],
     method="regression",
 )
 ```
 
-### ⚙️ What happens under the hood
+### What happens under the hood
 
-1. **Numerical NaNs** → filled with column means (`X.fillna(X.mean(numeric_only=True))`)
-2. **Train/test split** → `train_test_split` with `test_size=0.2`
-3. **Feature scaling** → `StandardScaler` fit on training, transform both sets
-4. **Model training** → `RandomForestClassifier` or `LinearRegression`
-5. **Evaluation** → metrics printed to the terminal
-6. **Return** → the trained estimator is returned for further use
+| Step | Description |
+|---|---|
+| 1. Imputation | Numerical NaNs filled with column means |
+| 2. Train/Test split | `test_size=0.2` (configurable) |
+| 3. Scaling | Features scaled with `StandardScaler` |
+| 4. Training | `RandomForestClassifier` or `LinearRegression` |
+| 5. Evaluation | Accuracy + classification report (or MSE + R²) printed to terminal |
+| 6. Return | Trained estimator object returned |
 
-### 📋 Sample classification output
+### Example output (classification)
 
 ```
 ==================================================
 Model type: classification
-Target column: survived
-Features (5): ['pclass', 'age', 'fare', 'sibsp', 'parch']
+Target column: Survived
+Features (5): ['Pclass', 'Age', 'Fare', 'SibSp', 'Parch']
 Train size: 712  |  Test size: 179
 --------------------------------------------------
 Accuracy: 0.8212
@@ -273,138 +296,57 @@ Accuracy: 0.8212
 ==================================================
 ```
 
-### 📋 Sample regression output
-
-```
-==================================================
-Model type: regression
-Target column: fare
-Features (4): ['pclass', 'age', 'sibsp', 'parch']
-Train size: 712  |  Test size: 179
---------------------------------------------------
-Mean Squared Error: 1258.4321
-R² Score: 0.4231
-==================================================
-```
-
-| Parameter | Default | Description |
-|---|---|---|
-| `target` | (required) | Name of the column to predict |
-| `features` | (required) | List of feature column names |
-| `method` | `"classification"` | `"classification"` or `"regression"` |
-| `test_size` | `0.2` | Fraction of data for testing |
-| `random_state` | `42` | Random seed for reproducibility |
-
 ---
 
-## ⏱️ Time-Series Engine
+## ⏱ Time-Series Engine
 
 ```python
-# Convert a date column to datetime and promote it to the index
+import tablofy as tf
+
+df = tf.load("sales_data.csv")
+
+# Convert a date column to datetime and set it as the index
 df.ts.set_time_index("date")
 
-# Resample to weekly averages
-weekly = df.ts.resample(rule="W", agg="mean")
-
 # Rolling mean — returns a new TablofyFrame
-rolling = df.ts.rolling(window=7, col="sales")
-print(type(rolling))  # <class 'TablofyFrame'>
+rolling_result = df.ts.rolling(window=7, col="revenue")
+print(type(rolling_result))   # <class 'tablofy.core.frame.TablofyFrame'>
+print(rolling_result.preview())
+
+# Resample to weekly sums
+weekly = df.ts.resample(rule="W", agg="sum")
 
 # Detect trend direction
-trend = df.ts.detect_trend("sales")
+trend = df.ts.detect_trend("revenue")
 # → {"direction": "upward", "slope": 40.0, "strength": "strong"}
 ```
 
-| Method | Returns | Description |
-|---|---|---|
-| `.ts.set_time_index(col)` | `TablofyFrame` (self) | Parse & promote column to DatetimeIndex |
-| `.ts.resample(rule, agg)` | `TablofyFrame` | Resample by offset alias |
-| `.ts.rolling(window, col)` | `TablofyFrame` | Rolling mean as a new frame |
-| `.ts.detect_trend(col)` | `dict` | Direction, slope, and strength |
+> `df.ts.rolling(window, col)` returns a **new** `TablofyFrame` (not a raw Series), so you can chain further operations on it.
 
 ---
 
-## 🗃️ SQL on DataFrames
+## 🎭 Aesthetic Themes
 
-Run read-only SQL queries against any `TablofyFrame` using DuckDB — the table is automatically registered as `data`.
+Apply a consistent visual style to **all** charts — both static (matplotlib/seaborn) and interactive (Plotly) — with a single call.
 
 ```python
-result = df.sql("""
-    SELECT pclass, ROUND(AVG(fare), 2) AS avg_fare
-    FROM data
-    WHERE age > 30
-    GROUP BY pclass
-    ORDER BY avg_fare DESC
-""")
+import tablofy as tf
+
+tf.set_theme("dark")       # Dark background with neon accents
+tf.set_theme("modern")     # Clean, minimal, sans-serif style
+tf.set_theme("pastel")     # Soft, bright, friendly colours
+tf.set_theme("classic")    # Academic style, serif font, no grid
+tf.set_theme("default")    # Reset to matplotlib/seaborn defaults
+
+# Custom colour palette
+tf.set_theme("modern", palette=["#ff6b6b", "#4ecdc4", "#45b7d1"])
 ```
 
----
-
-## 🎨 Theming
-
-Apply a consistent visual style to **all charts** (both static and interactive) in one call.
-
-```python
-tf.set_theme("dark")       # dark mode with neon accents
-tf.set_theme("modern")     # clean, minimal, sans-serif
-tf.set_theme("pastel")     # soft, bright colours
-tf.set_theme("classic")    # academic, serif, no grid
-tf.set_theme("default")    # reset to defaults
-
-# Custom palette
-tf.set_theme("modern", palette=["#ff6b6b", "#4ecdc4"])
-```
-
-Themes propagate to matplotlib rcParams, seaborn palettes, and Plotly templates simultaneously.
+> Themes propagate to matplotlib rcParams, seaborn `set_palette()`, and Plotly `template` simultaneously.
 
 ---
 
-## 📄 HTML Report Compiler
-
-Bundle your entire analysis into a single, self-contained, shareable HTML file.
-
-```python
-# Minimal report
-df.report("analysis.html")
-
-# With embedded chart images
-df.report("analysis.html", charts=[
-    ("Survival by Class", "charts/class_survival.png"),
-    ("Age Distribution",  "charts/age_dist.png"),
-])
-```
-
-Also supports Excel reports via `.report("analysis.xlsx")`.
-
----
-
-## 🧪 Jupyter Widget Explorer
-
-Inside a Jupyter notebook, launch a fully interactive dashboard with zero UI code:
-
-```python
-df.explore_interactive()
-```
-
-Renders: column picker, dynamic filters (sliders + multi-select), live table preview, and an auto-updating chart.
-
-Requires: `pip install tablofy[widgets]`
-
----
-
-## 📁 Supported File Formats
-
-| Extension | Format | Load | Export |
-|---|---|---|---|
-| `.csv` | Comma-separated values | `tf.load()` | `data.export()` |
-| `.xlsx` | Excel workbook | `tf.load()` | `data.export()` |
-| `.xls` | Excel 97–2003 | `tf.load()` | — |
-| `.json` | JSON | `tf.load()` | `data.export()` |
-| `.parquet` | Apache Parquet | `tf.load()` | `data.export()` |
-
----
-
-## 📚 API Overview
+## 📋 API Overview
 
 ### Loading
 
@@ -417,14 +359,13 @@ Requires: `pip install tablofy[widgets]`
 
 | Method | Description |
 |---|---|
-| `.preview(n=5)` | First `n` rows |
-| `.head(n=5)` | Alias for `.preview()` |
+| `.preview(n=5)` / `.head(n=5)` | First `n` rows |
 | `.shape()` | `{"rows": N, "columns": M}` |
 | `.columns()` | List of column names |
-| `.dtypes` | `{col: dtype}` mapping |
-| `.types()` | Column types + null counts as a DataFrame |
+| `.dtypes` | `{col: dtype}` as a dict |
+| `.types()` | Column types + null counts (DataFrame) |
 | `.missing()` | Columns with null values (DataFrame) |
-| `.duplicates()` | Duplicate row stats as a dict |
+| `.duplicates()` | Duplicate row stats (dict) |
 | `.summary()` | Descriptive statistics (DataFrame) |
 | `.profile()` | Full dataset profile (dict) |
 | `.size` | Total cell count |
@@ -435,20 +376,20 @@ Requires: `pip install tablofy[widgets]`
 
 | Method | Description |
 |---|---|
-| `.clean()` | In-place: duplicates, missing values, column names, dates, whitespace |
+| `.clean()` | In-place: duplicates, missing, column names, dates, whitespace |
 | `.clean_report()` | Summary of the last cleaning run (dict) |
 
 ### Transform
 
 | Method | Description |
 |---|---|
-| `.select(*cols)` | New frame with only the given columns (case-insensitive) |
+| `.select(*cols)` | New frame with given columns (case-insensitive) |
 | `.drop(col)` | New frame without a column |
 | `.rename(mapping)` | New frame with renamed columns |
 | `.sort(by, descending)` | New frame sorted by a column |
-| `.filter(expr)` | New frame filtered by a pandas query expression |
-| `.group(by)` | `GroupedFrame` for `.sum()` / `.mean()` / etc. |
-| `.pivot(index, columns, values)` | Pivot table (new frame) |
+| `.filter(expr)` | New frame filtered by a pandas query |
+| `.group(by)` | `GroupedFrame` for aggregation |
+| `.pivot(index, columns, values)` | Pivot table |
 | `.join(other, on, how)` | Merge two frames on a shared key |
 | `.export(path)` | Write to CSV, XLSX, JSON, or Parquet |
 
@@ -468,20 +409,7 @@ Requires: `pip install tablofy[widgets]`
 | `.pairplot(save)` | Pairwise scatter matrix |
 | `.chart(description)` | Smart chart from plain English |
 
-All methods accept `interactive=True` for Plotly charts (requires `tablofy[viz]`) and `save` to persist the figure.
-
-### Analytics
-
-| Method | Description |
-|---|---|
-| `.insights()` | Rule-based observations (list of strings) |
-| `.stats.describe()` | Descriptive statistics (DataFrame) |
-| `.stats.correlation()` | Correlation matrix (DataFrame) |
-| `.stats.covariance()` | Covariance matrix (DataFrame) |
-| `.stats.outliers(col)` | IQR outlier detection |
-| `.stats.mean(col)` / `.median(col)` / `.std(col)` / `.min(col)` / `.max(col)` | Per-column stats |
-| `.stats.quantile(col, q)` | Quantile value |
-| `.stats.value_counts(col)` | Frequency counts |
+All methods accept `interactive=True` for Plotly charts (requires `tablofy[viz]`) and `save` to persist figures.
 
 ### Machine Learning
 
@@ -495,7 +423,7 @@ All methods accept `interactive=True` for Plotly charts (requires `tablofy[viz]`
 |---|---|
 | `.ts.set_time_index(col)` | Parse & set datetime index (in-place) |
 | `.ts.resample(rule, agg)` | Resample by offset alias |
-| `.ts.rolling(window, col)` | Rolling mean as a new frame |
+| `.ts.rolling(window, col)` | Rolling mean as a new `TablofyFrame` |
 | `.ts.detect_trend(col)` | Trend dict: `direction`, `slope`, `strength` |
 
 ### SQL
@@ -513,30 +441,6 @@ All methods accept `interactive=True` for Plotly charts (requires `tablofy[viz]`
 
 ---
 
-## ❌ What Tablofy Is Not
-
-- **Not a pandas replacement** — access the raw DataFrame anytime with `.to_pandas()`
-- **Not a big-data tool** — operates in-memory on a single machine
-- **Not a deep-learning framework** — provides lightweight wrappers for quick experiments
-- **Not a dashboard server** — reports are static HTML or Excel files
-- **Not a database** — SQL runs in-memory against the loaded data only
-
----
-
-## 🤝 Contributing
-
-Contributions of all sizes are welcome!
-
-1. **Fork** the repository on [GitHub](https://github.com/Sheharyar-ans/tablofy)
-2. **Create** a feature branch: `git checkout -b feature/my-feature`
-3. **Install** dev dependencies: `pip install -e ".[dev]"`
-4. **Run** tests: `pytest`
-5. **Open** a pull request
-
-Please open an issue first for substantial changes to discuss the design.
-
----
-
-## 📝 License
+## 📄 License
 
 [MIT](LICENSE) © Sheharyar Siraj
