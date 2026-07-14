@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.3 (2026-07-14)
+
+- `MLWrapper.predict()` now accepts `method` parameter ("classification" / "regression") and prints a full classification report.
+- `TimeSeries.rolling(window, col)` accepts `col` keyword and returns a new `TablofyFrame` with rolling mean.
+- `TablofyFrame.__getitem__` for native square-bracket subscripting (`df['col']` → Series, `df[['a','b']]` → `TablofyFrame`).
+- `assert_file_exists` bypasses OS checks for `http://` / `https://` URLs.
+- Top-level aliases: `tf.pd`, `tf.np`, `tf.show()`, `tf.load_web()`.
+- Full `predict()` ML pipeline with auto-split, scaling, imputation, and metrics.
+
 ## 2.1.0 (2026-07-14)
 
 - Interactive Plotly charts (``interactive=True`` on all chart methods).
