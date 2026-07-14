@@ -8,7 +8,7 @@ import tablofy as tf
 
 class TestTopLevelExports:
     def test_import_as_tf(self):
-        assert tf.__version__ == "2.0.0"
+        assert tf.__version__ == "2.1.0"
 
     def test_load_exists(self):
         assert callable(tf.load)

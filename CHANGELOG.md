@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.1.0 (2026-07-14)
+
+- Interactive Plotly charts (``interactive=True`` on all chart methods).
+- Three new chart types: area, pie, violin.
+- Global theme/style system (``tf.set_theme()``) with 4 built-in themes.
+- Time-series helpers (``data.ts``): set_time_index, resample, rolling, detect_trend.
+- Lazy-loaded namespaces for ML (``data.ml``), web scraping (``data.scrape``), advanced stats (``data.stats``).
+- Jupyter Notebook widget explorer (``data.explore_interactive()``).
+- Optional dependency extras (``[ml]``, ``[viz]``, ``[widgets]``, ``[stats]``, ``[scraping]``, ``[fast]``, ``[dl]``, ``[all]``).
+- Delegation-based ``__getattr__`` for native pandas method access with automatic TablofyFrame wrapping.
+- Robust HTML report engine using ``importlib.resources`` and NaN sanitisation.
+
 ## 2.0.0 (2026-07-14)
 
 - Stable release of Tablofy v2.

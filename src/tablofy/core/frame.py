@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
@@ -34,6 +34,10 @@ class TablofyFrame:
         self._df = df
         self.name = name or "Data"
         self._last_clean_actions: list[dict] = []
+        self._ml: Any | None = None
+        self._stats: Any | None = None
+        self._scrape: Any | None = None
+        self._ts: Any | None = None
 
     # -- Properties -----------------------------------------------------------
 
@@ -49,9 +53,56 @@ class TablofyFrame:
 
     @property
     def stats(self):
-        """Access statistical methods (describe, correlation, etc.)."""
-        from tablofy.analytics.stats import Stats
-        return Stats(self)
+        """Access basic and advanced statistical methods.
+
+        Basic stats (mean, median, std, etc.) work out of the box.
+        Advanced stats (SciPy / Statsmodels) require ``tablofy[stats]``.
+        """
+        if self._stats is None:
+            try:
+                from tablofy.stats.wrapper import DataFrameStats
+                self._stats = DataFrameStats(self)
+            except ImportError:
+                from tablofy.analytics.stats import Stats
+                self._stats = Stats(self)
+        return self._stats
+
+    @property
+    def ml(self):
+        """Access ML operations (scikit-learn).
+
+        Requires ``tablofy[ml]``.
+        """
+        if self._ml is None:
+            try:
+                import sklearn  # noqa: F401
+            except ImportError as exc:
+                raise ImportError(
+                    "scikit-learn is required for ML features.\n"
+                    "  pip install tablofy[ml]"
+                ) from exc
+            from tablofy.ml.wrapper import MLWrapper
+            self._ml = MLWrapper(self)
+        return self._ml
+
+    @property
+    def scrape(self):
+        """Access web-scraping operations (BeautifulSoup, Requests).
+
+        Requires ``tablofy[scraping]``.
+        """
+        if self._scrape is None:
+            try:
+                import bs4  # noqa: F401
+                import requests  # noqa: F401
+            except ImportError as exc:
+                raise ImportError(
+                    "beautifulsoup4 and requests are required for scraping.\n"
+                    "  pip install tablofy[scraping]"
+                ) from exc
+            from tablofy.scrape.wrapper import ScrapeWrapper
+            self._scrape = ScrapeWrapper(self)
+        return self._scrape
 
     # -- Exploration ----------------------------------------------------------
 
@@ -396,7 +447,14 @@ class TablofyFrame:
 
     # -- Visualization --------------------------------------------------------
 
-    def bar(self, x: str, y: str, save: str | None = None, **kwargs):
+    def bar(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Bar chart of *x* vs *y*.
 
         Parameters
@@ -405,17 +463,26 @@ class TablofyFrame:
             Column for the x-axis (categories).
         y : str
             Column for the y-axis (values).
+        interactive : bool
+            If True, render an interactive Plotly chart (requires ``tablofy[viz]``).
         save : str or None
-            File path to save the figure.
+            File path to save the figure (PNG for static, HTML for interactive).
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).bar(x, y, save=save, **kwargs)
+        return Charts(self).bar(x, y, interactive=interactive, save=save, **kwargs)
 
-    def line(self, x: str, y: str, save: str | None = None, **kwargs):
+    def line(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Line chart of *x* vs *y*.
 
         Parameters
@@ -424,17 +491,26 @@ class TablofyFrame:
             Column for the x-axis.
         y : str
             Column for the y-axis.
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).line(x, y, save=save, **kwargs)
+        return Charts(self).line(x, y, interactive=interactive, save=save, **kwargs)
 
-    def scatter(self, x: str, y: str, save: str | None = None, **kwargs):
+    def scatter(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Scatter plot of *x* vs *y*.
 
         Parameters
@@ -443,34 +519,51 @@ class TablofyFrame:
             Column for the x-axis.
         y : str
             Column for the y-axis.
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).scatter(x, y, save=save, **kwargs)
+        return Charts(self).scatter(x, y, interactive=interactive, save=save, **kwargs)
 
-    def hist(self, column: str, save: str | None = None, **kwargs):
+    def hist(
+        self,
+        column: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Histogram of *column*.
 
         Parameters
         ----------
         column : str
             Column to plot.
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).hist(column, save=save, **kwargs)
+        return Charts(self).hist(column, interactive=interactive, save=save, **kwargs)
 
-    def box(self, x: str, y: str, save: str | None = None, **kwargs):
+    def box(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Box plot of *y* grouped by *x*.
 
         Parameters
@@ -479,45 +572,145 @@ class TablofyFrame:
             Column for grouping (categories).
         y : str
             Column for the values.
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).box(x, y, save=save, **kwargs)
+        return Charts(self).box(x, y, interactive=interactive, save=save, **kwargs)
 
-    def heatmap(self, save: str | None = None, **kwargs):
+    def heatmap(
+        self,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Correlation heatmap of all numeric columns.
 
         Parameters
         ----------
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        matplotlib.figure.Figure
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).heatmap(save=save, **kwargs)
+        return Charts(self).heatmap(interactive=interactive, save=save, **kwargs)
 
-    def pairplot(self, save: str | None = None, **kwargs):
+    def pairplot(
+        self,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
         """Pairwise scatter matrix of all numeric columns.
 
         Parameters
         ----------
+        interactive : bool
+            If True, render an interactive Plotly chart.
         save : str or None
             File path to save the figure.
 
         Returns
         -------
-        seaborn.PairGrid
+        seaborn.PairGrid or plotly.graph_objects.Figure
         """
         from tablofy.visualization.charts import Charts
-        return Charts(self).pairplot(save=save, **kwargs)
+        return Charts(self).pairplot(interactive=interactive, save=save, **kwargs)
+
+    def area(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
+        """Area chart of *x* vs *y*.
+
+        Parameters
+        ----------
+        x : str
+            Column for the x-axis.
+        y : str
+            Column for the y-axis.
+        interactive : bool
+            If True, render an interactive Plotly chart.
+        save : str or None
+            File path to save the figure.
+
+        Returns
+        -------
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
+        """
+        from tablofy.visualization.charts import Charts
+        return Charts(self).area(x, y, interactive=interactive, save=save, **kwargs)
+
+    def pie(
+        self,
+        labels: str,
+        values: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
+        """Pie chart of *values* grouped by *labels*.
+
+        Parameters
+        ----------
+        labels : str
+            Column for slice labels.
+        values : str
+            Column for slice sizes.
+        interactive : bool
+            If True, render an interactive Plotly chart.
+        save : str or None
+            File path to save the figure.
+
+        Returns
+        -------
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
+        """
+        from tablofy.visualization.charts import Charts
+        return Charts(self).pie(labels, values, interactive=interactive, save=save, **kwargs)
+
+    def violin(
+        self,
+        x: str,
+        y: str,
+        interactive: bool = False,
+        save: str | None = None,
+        **kwargs,
+    ):
+        """Violin plot of *y* grouped by *x*.
+
+        Parameters
+        ----------
+        x : str
+            Column for grouping (categories).
+        y : str
+            Column for the values.
+        interactive : bool
+            If True, render an interactive Plotly chart.
+        save : str or None
+            File path to save the figure.
+
+        Returns
+        -------
+        matplotlib.figure.Figure or plotly.graph_objects.Figure
+        """
+        from tablofy.visualization.charts import Charts
+        return Charts(self).violin(x, y, interactive=interactive, save=save, **kwargs)
 
     def chart(self, description: str, **kwargs):
         """Generate a chart from a plain-English description.
@@ -561,6 +754,18 @@ class TablofyFrame:
         """
         from tablofy.analytics.insights import Insights
         return Insights(self).generate()
+
+    @property
+    def ts(self):
+        """Access time-series transformation helpers.
+
+        Provides ``set_time_index``, ``resample``, ``rolling``, and
+        ``detect_trend`` methods.
+        """
+        if self._ts is None:
+            from tablofy.analytics.timeseries import TimeSeries
+            self._ts = TimeSeries(self)
+        return self._ts
 
     # -- SQL ------------------------------------------------------------------
 
@@ -628,6 +833,21 @@ class TablofyFrame:
                 f"Supported: .html, .xlsx"
             )
 
+    def explore_interactive(self) -> None:
+        """Launch an interactive widget dashboard inside a Jupyter notebook.
+
+        Displays a column picker, real-time filters, a dynamic table preview,
+        and an auto-updating chart.
+
+        Requires ``ipywidgets``:
+            pip install tablofy[widgets]
+
+        Falls back gracefully with a printed message outside of notebooks.
+        """
+        from tablofy.core.widgets import explore_interactive as _explore
+
+        _explore(self)
+
     # -- Escape hatch ---------------------------------------------------------
 
     def to_pandas(self) -> pd.DataFrame:
@@ -639,3 +859,24 @@ class TablofyFrame:
 
     def __len__(self) -> int:
         return self._df.shape[0]
+
+    def _repr_html_(self) -> str:
+        """Render an HTML table for Jupyter Notebook display."""
+        return self._df._repr_html_()
+
+    def __getattr__(self, name: str):
+        """Delegate unknown attribute access to the underlying DataFrame.
+
+        If the attribute is a callable (method) and its return value is a
+        ``pd.DataFrame``, it is automatically wrapped in a ``TablofyFrame``
+        so that chaining continues to work.
+        """
+        attr = getattr(self._df, name)
+        if callable(attr):
+            def wrapper(*args, **kwargs):
+                result = attr(*args, **kwargs)
+                if isinstance(result, pd.DataFrame):
+                    return TablofyFrame(result, name=self.name)
+                return result
+            return wrapper
+        return attr
