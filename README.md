@@ -59,7 +59,7 @@ Stop writing the same 10 imports at the top of every notebook. Tablofy wraps **p
 ## 📦 Installation
 
 ```bash
-pip install "tablofy[all]==2.1.3"
+pip install tablofy
 ```
 
 Requires Python 3.8 or later.

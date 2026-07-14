@@ -15,6 +15,11 @@ from tablofy.visualization.styles import set_theme
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+try:
+    logging.getLogger('matplotlib.category').setLevel(logging.WARNING)
+except Exception:
+    pass
+
 __version__ = "2.1.3"
 
 try:
